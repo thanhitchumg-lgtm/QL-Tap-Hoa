@@ -14,40 +14,15 @@
         .btn-pay { font-size: 1.2rem; font-weight: bold; }
         /* CSS cho in ấn và watermark hóa đơn */
 /* Thiết lập Watermark & CSS In ấn */
-        .watermark { 
-            position: absolute; 
-            top: 50%; 
-            left: 50%; 
-            transform: translate(-50%, -50%) rotate(-35deg); 
-            font-size: 3.8rem; 
-            color: rgba(255, 0, 0, 0.08); 
-            font-weight: 900; 
-            pointer-events: none; 
-            z-index: 1; 
-            white-space: nowrap; 
-            font-family: 'Arial', sans-serif;
-            letter-spacing: 5px;
-        }
+      /* Watermark CHƯA LƯU và CSS In ấn */
+        .watermark { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 3rem; color: rgba(255, 0, 0, 0.1); font-weight: bold; pointer-events: none; }
         @media print {
             body * { visibility: hidden; }
-            .modal-backdrop, .watermark, .modal-footer, .btn, button { display: none !important; }
+            .modal-backdrop, .modal-footer, .watermark { display: none !important; }
             #printArea, #printArea * { visibility: visible; }
-            #printArea { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0 !important; }
+            #printArea { position: absolute; left: 0; top: 0; width: 100%; }
         }
-        /* CSS Dành riêng cho máy in */
-        #printArea { display: none; }
-        @media print {
-            body * { visibility: hidden; } /* Ẩn toàn bộ web khi in */
-            #printArea { 
-                display: block; 
-                position: absolute; 
-                left: 0; 
-                top: 0; 
-                width: 100%; 
-                visibility: visible; 
-            }
-            #printArea * { visibility: visible; }
-        }
+
     </style>
 </head>
 <body>
@@ -99,26 +74,26 @@
     </div>
 <!-- Khu vực ẩn chứa mẫu hóa đơn -->
     <div id="printArea"></div>
-    <!-- Modal Hóa Đơn Bán Lẻ -->
-<!-- Modal Hóa Đơn Bán Lẻ -->
-    <div class="modal fade" id="billModal" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" style="max-width: 420px;">
-            <div class="modal-content" style="border-radius: 8px; border: none; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-                <!-- Phần Hóa Đơn (Print Area) -->
-                <div class="modal-body p-0" style="background: #fff; padding: 25px 20px 15px 20px !important; font-family: 'Courier New', Courier, monospace; color: #000; position: relative;" id="printArea">
-                    <div id="billContent">
-                        <!-- Dữ liệu hóa đơn sẽ đổ vào đây -->
-                    </div>
+
+  <!-- Bảng Bill Nổi Lên (Modal) -->
+    <div class="modal fade" id="billModal" data-bs-backdrop="static" tabindex="-1">
+        <div class="modal-dialog modal-dialog-scrollable" style="max-width: 400px;">
+            <div class="modal-content">
+                <!-- Khu vực in hóa đơn -->
+                <div class="modal-body" id="printArea" style="background: #fff; padding: 20px; font-family: 'Courier New', Courier, monospace; color: #000; position: relative;">
+                    <div id="billContent"></div>
                 </div>
-                <!-- 3 Nút Điều Hướng -->
-                <div class="modal-footer d-flex justify-content-between bg-light p-2 border-top" style="gap: 5px;">
-                    <button type="button" class="btn fw-bold text-white flex-grow-1 py-2" style="background-color: #6c757d; font-size: 0.9rem;" onclick="executeCheckout(true)">IN HÓA ĐƠN</button>
-                    <button type="button" class="btn btn-danger fw-bold flex-grow-1 py-2" style="font-size: 0.9rem;" data-bs-dismiss="modal">HỦY</button>
-                    <button type="button" class="btn btn-success fw-bold flex-grow-1 py-2" style="font-size: 0.9rem;" onclick="executeCheckout(false)">XONG (LƯU)</button>
+                <!-- 3 Nút Bấm Chức Năng -->
+                <div class="modal-footer d-flex justify-content-between p-2" style="background: #f1f1f1; border-top: 2px solid #ccc;">
+                    <button class="btn text-white fw-bold" style="background-color: #6c757d; width: 32%;" onclick="processOrder('print')">IN HÓA ĐƠN</button>
+                    <button class="btn btn-danger fw-bold" style="width: 32%;" data-bs-dismiss="modal">HỦY</button>
+                    <button class="btn btn-success fw-bold" style="width: 32%;" onclick="processOrder('save')">XONG (LƯU)</button>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Script bắt buộc để bảng Bill hiển thị được -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script type="module" src="app.js"></script>
 </body>
