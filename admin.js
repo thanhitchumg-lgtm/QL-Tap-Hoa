@@ -15,11 +15,6 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// Bảo vệ trang
-onAuthStateChanged(auth, (user) => {
-    if (!user) window.location.href = "login.html";
-});
-
 window.logout = function() {
     signOut(auth).then(() => { window.location.href = "login.html"; });
 }
@@ -96,4 +91,12 @@ window.loadDashboard = async function() {
         alert("Lỗi tải báo cáo!");
     }
 }
-window.loadDashboard();
+
+// BƯỚC SỬA LỖI: Chỉ tải báo cáo quản trị sau khi Firebase xác nhận đã đăng nhập
+onAuthStateChanged(auth, (user) => {
+    if (!user) {
+        window.location.href = "login.html";
+    } else {
+        window.loadDashboard();
+    }
+});
