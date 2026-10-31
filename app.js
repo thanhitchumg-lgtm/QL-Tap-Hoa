@@ -15,11 +15,6 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// Bảo vệ trang: Chặn nếu chưa đăng nhập
-onAuthStateChanged(auth, (user) => {
-    if (!user) window.location.href = "login.html";
-});
-
 window.logout = function() {
     signOut(auth).then(() => { window.location.href = "login.html"; });
 }
@@ -47,7 +42,6 @@ function loadProducts() {
         });
     });
 }
-loadProducts();
 
 window.addToCart = function(id, name, price, cost) {
     const existingItem = cart.find(item => item.id === id);
@@ -141,3 +135,12 @@ window.checkout = async function() {
         alert("Lỗi khi thanh toán!");
     }
 }
+
+// BƯỚC SỬA LỖI: Chỉ tải sản phẩm sau khi Firebase xác nhận đã đăng nhập thành công
+onAuthStateChanged(auth, (user) => {
+    if (!user) {
+        window.location.href = "login.html";
+    } else {
+        loadProducts(); 
+    }
+});
