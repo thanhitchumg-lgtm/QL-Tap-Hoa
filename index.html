@@ -12,6 +12,14 @@
         .product-card:hover { border-color: #2b4b9b; box-shadow: 0 0 5px rgba(43,75,155,0.3); }
         .cart-container { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .btn-pay { font-size: 1.2rem; font-weight: bold; }
+        /* CSS cho in ấn và watermark hóa đơn */
+        .watermark { position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 3.5rem; color: rgba(255, 0, 0, 0.15); font-weight: bold; pointer-events: none; z-index: 10; white-space: nowrap; }
+        @media print {
+            body * { visibility: hidden; }
+            .modal-backdrop, .watermark, .modal-footer { display: none !important; }
+            #printArea, #printArea * { visibility: visible; }
+            #printArea { position: absolute; left: 0; top: 0; width: 100%; margin: 0; }
+        }
         /* CSS Dành riêng cho máy in */
         #printArea { display: none; }
         @media print {
