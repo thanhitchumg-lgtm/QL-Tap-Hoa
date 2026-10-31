@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>POS Tạp Hóa</title>
-    <!-- Nhúng thư viện Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body { background-color: #f8f9fa; }
@@ -17,27 +16,21 @@
 </head>
 <body>
 
-    <!-- Thanh điều hướng -->
     <nav class="navbar navbar-custom px-3 py-2">
         <span class="navbar-brand mb-0 h1 text-white" style="font-size: 1.2rem;">🏪 POS Tạp Hóa</span>
-        <button class="btn btn-outline-light btn-sm" onclick="window.location.href='admin.html'">⚙️ Quản Trị</button>
-        <button class="btn btn-danger btn-sm ms-2" onclick="logout()">🚪 Thoát</button>
+        <div>
+            <button class="btn btn-outline-light btn-sm" onclick="window.location.href='admin.html'">⚙️ Quản Trị</button>
+            <button class="btn btn-danger btn-sm ms-2" onclick="logout()">🚪 Thoát</button>
+        </div>
     </nav>
 
-    <!-- Khu vực chính -->
     <div class="container-fluid mt-3">
         <div class="row">
-            <!-- Cột trái: Danh sách sản phẩm -->
             <div class="col-md-8">
                 <input type="text" class="form-control mb-3" placeholder="Gõ tên hoặc quét mã SP...">
-                
-                <!-- Khu vực hiển thị danh sách sản phẩm từ Firebase -->
-                <div class="row row-cols-2 row-cols-md-4 g-3" id="productList">
-                    <!-- Dữ liệu sẽ được JavaScript đẩy vào đây -->
-                </div>
+                <div class="row row-cols-2 row-cols-md-4 g-3" id="productList"></div>
             </div>
 
-            <!-- Cột phải: Giỏ hàng -->
             <div class="col-md-4">
                 <div class="cart-container">
                     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -48,22 +41,16 @@
                     </div>
                     
                     <input type="text" id="customerInfo" class="form-control mb-3" placeholder="Tên/SĐT Khách (Trống = Khách lẻ)">
-                    
-                    <!-- Khu vực chứa danh sách món hàng đã chọn -->
-                    <div id="cartList" class="mb-3" style="min-height: 150px; max-height: 250px; overflow-y: auto;">
-                        <!-- Các món hàng sẽ hiện ở đây -->
-                    </div>
+                    <div id="cartList" class="mb-3" style="min-height: 150px; max-height: 250px; overflow-y: auto;"></div>
                     
                     <div class="d-flex justify-content-between fw-bold text-danger mb-2">
                         <span>Tổng tiền:</span>
                         <span id="totalPrice">0 đ</span>
                     </div>
-                    
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <span class="fw-bold">Khách đưa:</span>
                         <input type="number" id="customerPay" class="form-control form-control-sm w-50 text-end" oninput="calculateChange()">
                     </div>
-                    
                     <div class="d-flex justify-content-between fw-bold text-primary mb-3">
                         <span>Tiền thối:</span>
                         <span id="changeMoney">0 đ</span>
@@ -75,7 +62,6 @@
         </div>
     </div>
 
-    <!-- Nhúng file logic JavaScript -->
     <script type="module" src="app.js"></script>
 </body>
 </html>
