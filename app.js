@@ -104,6 +104,7 @@ window.calculateChange = function() {
 }
 
 // Bật Modal Hóa Đơn để xem trước
+// BẬT MODAL HÓA ĐƠN TRỰC TIẾP (Kèm mã VietQR)
 window.checkout = function() {
     if (cart.length === 0) return alert("Giỏ hàng đang trống!");
 
@@ -116,30 +117,30 @@ window.checkout = function() {
     let orderId = "HD" + Date.now().toString().slice(-6);
     let now = new Date().toLocaleString('vi-VN');
 
-    // Tự động tạo mã VietQR động theo tổng tiền đơn hàng
+    // Tạo mã VietQR tự động dựa trên thông tin ngân hàng và số tiền
     let qrUrl = `https://img.vietqr.io/image/tcb-0934588820-print.png?amount=${totalAmount}&addInfo=${orderId}&accountName=NGUYEN%20HUU%20THANH`;
 
     let billHtml = `
         <div class="watermark">CHƯA LƯU</div>
-        <h4 class="text-center mb-1 fw-bold fs-5">TẠP HÓA</h4>
-        <div class="text-center" style="border-bottom: 1px dashed #000; margin-bottom: 10px; padding-bottom: 10px;">
-            <h5 class="fw-bold mb-1 fs-6">HÓA ĐƠN BÁN LẺ</h5>
-            <small>Mã HĐ: ${orderId}</small><br>
-            <small>Ngày: ${now}</small><br>
-            <small class="fw-bold">Khách: ${customerInfo}</small>
+        <h4 class="text-center mb-1 fw-bold" style="font-size: 1.3rem; letter-spacing: 2px;">TẠP HÓA</h4>
+        <div class="text-center" style="border-bottom: 1px dashed #000; margin-bottom: 10px; padding-bottom: 8px;">
+            <h5 class="fw-bold mb-1" style="font-size: 1rem; letter-spacing: 1px;">HÓA ĐƠN BÁN LẺ</h5>
+            <small style="font-size: 0.8rem;">Mã HĐ: ${orderId}</small><br>
+            <small style="font-size: 0.8rem;">Ngày: ${now}</small><br>
+            <small class="fw-bold" style="font-size: 0.85rem;">Khách: ${customerInfo}</small>
         </div>
-        <table style="width: 100%; font-size: 13px; margin-bottom: 10px;">
+        <table style="width: 100%; font-size: 0.85rem; margin-bottom: 8px; border-collapse: collapse;">
             <tr style="border-bottom: 1px dashed #000;">
                 <th class="text-start pb-1">Tên Hàng</th>
-                <th class="text-center pb-1">SL</th>
-                <th class="text-end pb-1">TTiền</th>
+                <th class="text-center pb-1" style="width: 40px;">SL</th>
+                <th class="text-end pb-1" style="width: 80px;">TTiền</th>
             </tr>
     `;
 
     cart.forEach(item => {
         billHtml += `
             <tr>
-                <td class="pt-1">${item.name}</td>
+                <td class="pt-1 text-start" style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.name}</td>
                 <td class="text-center pt-1">${item.qty}</td>
                 <td class="text-end pt-1">${(item.price * item.qty).toLocaleString('vi-VN')}</td>
             </tr>
@@ -148,8 +149,8 @@ window.checkout = function() {
 
     billHtml += `
         </table>
-        <div style="border-top: 1px dashed #000; padding-top: 10px; font-size: 14px;">
-            <div class="d-flex justify-content-between fw-bold fs-6">
+        <div style="border-top: 1px dashed #000; padding-top: 8px; font-size: 0.85rem; line-height: 1.4;">
+            <div class="d-flex justify-content-between fw-bold" style="font-size: 0.95rem;">
                 <span>TỔNG CỘNG:</span>
                 <span>${totalAmount.toLocaleString('vi-VN')} đ</span>
             </div>
@@ -163,24 +164,26 @@ window.checkout = function() {
             </div>
         </div>
         
-        <div class="text-center mt-3" style="border-top: 1px dashed #000; padding-top: 10px;">
-            <span class="fw-bold fs-6">QUÉT MÃ CHUYỂN KHOẢN</span><br>
-            <img src="${qrUrl}" alt="VietQR" style="width: 180px; margin-top: 5px;">
+        <div class="text-center mt-3" style="border-top: 1px dashed #000; padding-top: 8px; position: relative; z-index: 2;">
+            <span class="fw-bold" style="font-size: 0.8rem; letter-spacing: 1px;">QUÉT MÃ CHUYỂN KHOẢN</span><br>
+            <div style="display: inline-block; background: #fff; padding: 5px; border-radius: 4px; margin-top: 5px;">
+                <img src="${qrUrl}" alt="VietQR" style="width: 140px; height: 140px; display: block;">
+            </div>
         </div>
-        <p class="text-center mt-3 mb-0" style="font-style: italic; font-size: 13px;">Cảm ơn Quý khách!</p>
+        <p class="text-center mt-2 mb-0" style="font-style: italic; font-size: 0.75rem;">Cảm ơn Quý khách!</p>
     `;
 
     document.getElementById('billContent').innerHTML = billHtml;
     
-    // Mở bảng Bill
+    // Hiển thị modal hóa đơn
     const billModal = new bootstrap.Modal(document.getElementById('billModal'));
     billModal.show();
 }
 
-// Thực thi Lưu Đơn Hàng (và In nếu có)
+// XỬ LÝ LƯU ĐƠN HÀNG & TRỪ KHO (Sau khi ấn IN hoặc XONG)
 window.executeCheckout = async function(shouldPrint) {
     if (shouldPrint) {
-        window.print(); // Trình duyệt tự ẩn nút và chữ "CHƯA LƯU" khi in nhờ CSS
+        window.print(); // Gọi lệnh in của hệ thống, CSS sẽ tự động ẩn Watermark "CHƯA LƯU" & các nút bấm
     }
 
     let customerInfo = document.getElementById('customerInfo').value || "Khách Lẻ";
@@ -192,6 +195,7 @@ window.executeCheckout = async function(shouldPrint) {
     });
 
     try {
+        // 1. Lưu đơn vào Firebase Firestore
         await addDoc(collection(db, "orders"), {
             timestamp: new Date(),
             customerInfo: customerInfo,
@@ -200,23 +204,25 @@ window.executeCheckout = async function(shouldPrint) {
             items: cart
         });
 
+        // 2. Trừ tồn kho
         for (let item of cart) {
             await updateDoc(doc(db, "products", item.id), { stock: increment(-item.qty) });
         }
         
-        // Ẩn bảng Bill và làm sạch dữ liệu
+        // 3. Tự động đóng Modal
         const modalEl = document.getElementById('billModal');
         const modal = bootstrap.Modal.getInstance(modalEl);
         if (modal) modal.hide();
 
+        // 4. Làm sạch giỏ hàng & các ô nhập liệu (Không còn thông báo Alert làm phiền)
         clearCart();
         document.getElementById('customerInfo').value = "";
         document.getElementById('customerPay').value = "";
         document.getElementById('changeMoney').innerText = "0 đ";
 
     } catch (error) {
-        console.error(error);
-        alert("Lỗi khi lưu đơn hàng!");
+        console.error("Lỗi khi thanh toán: ", error);
+        alert("Lỗi khi lưu đơn hàng! Vui lòng thử lại.");
     }
 }
 
