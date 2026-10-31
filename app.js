@@ -1,6 +1,8 @@
 // 1. Nhúng các hàm cần thiết từ thư viện Firebase
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
 import { getFirestore, collection, onSnapshot, addDoc, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
+
 
 // 2. Cấu hình Firebase của dự án TapHoa POS
 const firebaseConfig = {
@@ -15,6 +17,21 @@ const firebaseConfig = {
 // Khởi tạo ứng dụng và kết nối Cơ sở dữ liệu
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
+
+// Kiểm tra: Nếu chưa đăng nhập thì đẩy ra trang login
+onAuthStateChanged(auth, (user) => {
+    if (!user) {
+        window.location.href = "login.html";
+    }
+});
+
+// Hàm đăng xuất
+window.logout = function() {
+    signOut(auth).then(() => {
+        window.location.href = "login.html";
+    });
+}
 
 // Biến lưu trữ giỏ hàng hiện tại
 let cart = [];
