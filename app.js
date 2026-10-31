@@ -103,12 +103,89 @@ window.calculateChange = function() {
     }
 }
 
-window.checkout = async function() {
+// Bật Modal Hóa Đơn để xem trước
+window.checkout = function() {
     if (cart.length === 0) return alert("Giỏ hàng đang trống!");
 
-    let customerInfo = document.getElementById('customerInfo').value || "Khách lẻ";
-    let totalAmount = 0, totalProfit = 0;
+    let totalAmount = 0;
+    cart.forEach(item => totalAmount += item.price * item.qty);
+    
+    let customerPay = document.getElementById('customerPay').value;
+    let change = customerPay && Number(customerPay) > totalAmount ? Number(customerPay) - totalAmount : 0;
+    let customerInfo = document.getElementById('customerInfo').value || "Khách Lẻ";
+    let orderId = "HD" + Date.now().toString().slice(-6);
+    let now = new Date().toLocaleString('vi-VN');
 
+    // Tự động tạo mã VietQR động theo tổng tiền đơn hàng
+    let qrUrl = `https://img.vietqr.io/image/tcb-0934588820-print.png?amount=${totalAmount}&addInfo=${orderId}&accountName=NGUYEN%20HUU%20THANH`;
+
+    let billHtml = `
+        <div class="watermark">CHƯA LƯU</div>
+        <h4 class="text-center mb-1 fw-bold fs-5">TẠP HÓA</h4>
+        <div class="text-center" style="border-bottom: 1px dashed #000; margin-bottom: 10px; padding-bottom: 10px;">
+            <h5 class="fw-bold mb-1 fs-6">HÓA ĐƠN BÁN LẺ</h5>
+            <small>Mã HĐ: ${orderId}</small><br>
+            <small>Ngày: ${now}</small><br>
+            <small class="fw-bold">Khách: ${customerInfo}</small>
+        </div>
+        <table style="width: 100%; font-size: 13px; margin-bottom: 10px;">
+            <tr style="border-bottom: 1px dashed #000;">
+                <th class="text-start pb-1">Tên Hàng</th>
+                <th class="text-center pb-1">SL</th>
+                <th class="text-end pb-1">TTiền</th>
+            </tr>
+    `;
+
+    cart.forEach(item => {
+        billHtml += `
+            <tr>
+                <td class="pt-1">${item.name}</td>
+                <td class="text-center pt-1">${item.qty}</td>
+                <td class="text-end pt-1">${(item.price * item.qty).toLocaleString('vi-VN')}</td>
+            </tr>
+        `;
+    });
+
+    billHtml += `
+        </table>
+        <div style="border-top: 1px dashed #000; padding-top: 10px; font-size: 14px;">
+            <div class="d-flex justify-content-between fw-bold fs-6">
+                <span>TỔNG CỘNG:</span>
+                <span>${totalAmount.toLocaleString('vi-VN')} đ</span>
+            </div>
+            <div class="d-flex justify-content-between">
+                <span>Khách đưa:</span>
+                <span>${customerPay ? Number(customerPay).toLocaleString('vi-VN') : totalAmount.toLocaleString('vi-VN')} đ</span>
+            </div>
+            <div class="d-flex justify-content-between">
+                <span>Tiền thối:</span>
+                <span>${change.toLocaleString('vi-VN')} đ</span>
+            </div>
+        </div>
+        
+        <div class="text-center mt-3" style="border-top: 1px dashed #000; padding-top: 10px;">
+            <span class="fw-bold fs-6">QUÉT MÃ CHUYỂN KHOẢN</span><br>
+            <img src="${qrUrl}" alt="VietQR" style="width: 180px; margin-top: 5px;">
+        </div>
+        <p class="text-center mt-3 mb-0" style="font-style: italic; font-size: 13px;">Cảm ơn Quý khách!</p>
+    `;
+
+    document.getElementById('billContent').innerHTML = billHtml;
+    
+    // Mở bảng Bill
+    const billModal = new bootstrap.Modal(document.getElementById('billModal'));
+    billModal.show();
+}
+
+// Thực thi Lưu Đơn Hàng (và In nếu có)
+window.executeCheckout = async function(shouldPrint) {
+    if (shouldPrint) {
+        window.print(); // Trình duyệt tự ẩn nút và chữ "CHƯA LƯU" khi in nhờ CSS
+    }
+
+    let customerInfo = document.getElementById('customerInfo').value || "Khách Lẻ";
+    let totalAmount = 0, totalProfit = 0;
+    
     cart.forEach(item => {
         totalAmount += item.price * item.qty;
         totalProfit += (item.price - item.cost) * item.qty;
@@ -127,24 +204,19 @@ window.checkout = async function() {
             await updateDoc(doc(db, "products", item.id), { stock: increment(-item.qty) });
         }
         
-        alert("Thanh toán thành công!");
-        
-        // HỎI IN HÓA ĐƠN
-        if (confirm("Thanh toán hoàn tất! Bạn có muốn in hóa đơn không?")) {
-            let customerPay = document.getElementById('customerPay').value;
-            let change = customerPay ? (Number(customerPay) - totalAmount) : 0;
-            printReceipt(customerInfo, cart, totalAmount, customerPay, change);
-        }
-        
-        // 3. Làm sạch giỏ hàng (code cũ giữ nguyên)...
-        clearCart();
+        // Ẩn bảng Bill và làm sạch dữ liệu
+        const modalEl = document.getElementById('billModal');
+        const modal = bootstrap.Modal.getInstance(modalEl);
+        if (modal) modal.hide();
+
         clearCart();
         document.getElementById('customerInfo').value = "";
         document.getElementById('customerPay').value = "";
         document.getElementById('changeMoney').innerText = "0 đ";
+
     } catch (error) {
         console.error(error);
-        alert("Lỗi khi thanh toán!");
+        alert("Lỗi khi lưu đơn hàng!");
     }
 }
 
