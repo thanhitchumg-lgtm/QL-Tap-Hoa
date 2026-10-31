@@ -165,9 +165,9 @@ window.checkout = function() {
             </div>
         </div>
         
-        <div class="text-center mt-4" style="border-top: 2px dashed #ccc; padding-top: 15px;">
+<div class="text-center mt-4" style="border-top: 2px dashed #ccc; padding-top: 15px;">
             <span class="fw-bold fs-6">QUÉT MÃ CHUYỂN KHOẢN</span><br>
-            <img src="${qrUrl}" alt="VietQR" style="width: 180px; margin-top: 10px;">
+            <img src="${qrUrl}" alt="VietQR" style="width: 300px; margin-top: 10px;">
         </div>
         <p class="text-center mt-3 mb-0" style="font-style: italic; font-size: 13px;">Cảm ơn Quý khách!</p>
     `;
