@@ -128,6 +128,16 @@ window.checkout = async function() {
         }
         
         alert("Thanh toán thành công!");
+        
+        // HỎI IN HÓA ĐƠN
+        if (confirm("Thanh toán hoàn tất! Bạn có muốn in hóa đơn không?")) {
+            let customerPay = document.getElementById('customerPay').value;
+            let change = customerPay ? (Number(customerPay) - totalAmount) : 0;
+            printReceipt(customerInfo, cart, totalAmount, customerPay, change);
+        }
+        
+        // 3. Làm sạch giỏ hàng (code cũ giữ nguyên)...
+        clearCart();
         clearCart();
         document.getElementById('customerInfo').value = "";
         document.getElementById('customerPay').value = "";
