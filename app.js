@@ -29,9 +29,11 @@ function loadProducts() {
             const product = documentSnapshot.data();
             const formattedPrice = product.price.toLocaleString('vi-VN') + ' đ';
             const cost = product.cost || 0; 
+            const barcode = product.barcode || ""; // Lấy mã vạch từ Firebase
             
+            // Gắn thêm thuộc tính data-name và data-barcode để tìm kiếm
             productList.innerHTML += `
-                <div class="col">
+                <div class="col product-item" data-name="${product.name.toLowerCase()}" data-barcode="${barcode}">
                     <div class="card product-card h-100 p-2" onclick="addToCart('${documentSnapshot.id}', '${product.name}', ${product.price}, ${cost})">
                         <h6 class="card-title mb-1" style="font-size: 0.95rem;">${product.name}</h6>
                         <span class="text-danger fw-bold">${formattedPrice}</span>
@@ -144,3 +146,39 @@ onAuthStateChanged(auth, (user) => {
         loadProducts(); 
     }
 });
+// XỬ LÝ TÌM KIẾM VÀ MÁY QUÉT MÁY VẠCH
+const searchInput = document.getElementById('searchInput');
+if (searchInput) {
+    searchInput.addEventListener('keyup', function(e) {
+        const keyword = this.value.toLowerCase().trim();
+        const items = document.querySelectorAll('.product-item');
+        let firstVisibleItem = null;
+
+        // Lọc sản phẩm theo tên hoặc mã vạch
+        items.forEach(item => {
+            const name = item.getAttribute('data-name');
+            const barcode = item.getAttribute('data-barcode');
+
+            if (name.includes(keyword) || barcode.includes(keyword)) {
+                item.style.display = ""; // Hiện nếu khớp
+                if (!firstVisibleItem) firstVisibleItem = item; // Ghi nhớ món hàng đầu tiên tìm thấy
+            } else {
+                item.style.display = "none"; // Ẩn nếu không khớp
+            }
+        });
+
+        // Nếu người dùng nhấn Enter (hoặc do Máy quét mã vạch tự động nhấn Enter)
+        if (e.key === 'Enter') {
+            if (firstVisibleItem) {
+                // Tự động "Click" vào sản phẩm đó để ném vào Giỏ hàng
+                firstVisibleItem.querySelector('.card').click();
+                
+                // Xóa trắng ô tìm kiếm để sẵn sàng quét món tiếp theo
+                this.value = '';
+                
+                // Hiển thị lại toàn bộ danh sách hàng hóa
+                items.forEach(item => item.style.display = "");
+            }
+        }
+    });
+}
