@@ -182,3 +182,48 @@ if (searchInput) {
         }
     });
 }
+// HÀM TẠO VÀ IN HÓA ĐƠN
+window.printReceipt = function(customerInfo, cart, total, pay, change) {
+    const printDiv = document.getElementById('printArea');
+    const now = new Date().toLocaleString('vi-VN');
+    
+    let html = `
+        <div style="width: 80mm; padding: 10px; font-family: monospace; font-size: 14px; color: black; margin: 0 auto;">
+            <h4 style="text-align: center; margin: 0;">TẠP HÓA CỦA THÀNH</h4>
+            <p style="text-align: center; margin: 5px 0;">ĐC: Đống Đa, Hà Nội<br>ĐT: 0934588820</p>
+            <hr style="border: 1px dashed #000;">
+            <p style="margin: 5px 0;"><strong>Ngày:</strong> ${now}</p>
+            <p style="margin: 5px 0;"><strong>Khách:</strong> ${customerInfo}</p>
+            <hr style="border: 1px dashed #000;">
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px;">
+                <tr style="border-bottom: 1px solid #000;">
+                    <th style="text-align: left; padding: 5px 0;">Món</th>
+                    <th style="text-align: center; padding: 5px 0;">SL</th>
+                    <th style="text-align: right; padding: 5px 0;">TT</th>
+                </tr>
+    `;
+    
+    cart.forEach(item => {
+        html += `
+            <tr>
+                <td style="padding: 5px 0;">${item.name}</td>
+                <td style="text-align: center; padding: 5px 0;">${item.qty}</td>
+                <td style="text-align: right; padding: 5px 0;">${(item.price * item.qty).toLocaleString('vi-VN')}</td>
+            </tr>
+        `;
+    });
+    
+    html += `
+            </table>
+            <hr style="border: 1px dashed #000;">
+            <p style="text-align: right; margin: 5px 0;"><strong>Tổng cộng:</strong> ${total.toLocaleString('vi-VN')} đ</p>
+            <p style="text-align: right; margin: 5px 0;"><strong>Khách đưa:</strong> ${pay ? Number(pay).toLocaleString('vi-VN') : total.toLocaleString('vi-VN')} đ</p>
+            <p style="text-align: right; margin: 5px 0;"><strong>Tiền thối:</strong> ${change > 0 ? change.toLocaleString('vi-VN') : '0'} đ</p>
+            <hr style="border: 1px dashed #000;">
+            <p style="text-align: center; margin-top: 10px; font-style: italic;">Cảm ơn quý khách!</p>
+        </div>
+    `;
+    
+    printDiv.innerHTML = html;
+    window.print(); // Gọi lệnh in của trình duyệt
+}
